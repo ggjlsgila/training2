@@ -834,38 +834,57 @@
             <div class="bg-white p-6 rounded-xl shadow-sm">
                 <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">5. Kelola Histori Training & Artikel
                 </h2>
+                @if ($errors->any())
+                    <div role="alert" class="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+                        <ul class="list-inside list-disc space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form action="{{ route('admin.landing.store_history') }}" method="POST"
                     enctype="multipart/form-data" class="bg-slate-50 p-4 rounded-lg border mb-6 space-y-3">
                     @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold mb-1">Judul Artikel / Kegiatan Training</label>
-                            <input type="text" name="title" required
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Judul Kegiatan Training</label>
+                            <input type="text" name="title" value="{{ old('title') }}" maxlength="255" required
                                 class="w-full border rounded-lg p-2 text-sm bg-white">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold mb-1">Foto Dokumentasi Kegiatan</label>
-                            <input type="file" name="documentation_image" required
+                            <label class="block text-xs font-semibold mb-1">Tanggal Kegiatan</label>
+                            <input type="date" name="date" value="{{ old('date') }}"
+                                class="w-full border rounded-lg p-2 text-sm bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Gambar Depan</label>
+                            <input type="file" name="documentation_image" accept="image/jpeg,image/png,image/webp" required
                                 class="w-full border rounded-lg p-1.5 text-xs bg-white">
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">Isi Artikel Process Training</label>
-                        <textarea name="content" rows="4" required class="w-full border rounded-lg p-2 text-sm bg-white"></textarea>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Keterangan Singkat</label>
+                            <textarea name="content" rows="3" maxlength="1000" required
+                                class="w-full border rounded-lg p-2 text-sm bg-white">{{ old('content') }}</textarea>
+                        </div>
                     </div>
                     <button type="submit"
-                        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow">+
-                        Simpan Histori Training</button>
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow">
+                        + Tambah Histori Training
+                    </button>
                 </form>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     @foreach ($histories as $history)
-                        <div class="border rounded-xl p-4 bg-white shadow-sm flex gap-4">
+                        <article class="flex gap-4 rounded-xl border bg-white p-4 shadow-sm">
                             <img src="{{ asset('storage/' . $history->documentation_image) }}"
-                                class="w-32 h-24 object-cover rounded">
-                            <div class="flex-1">
-                                <h3 class="font-bold text-sm mb-1">{{ $history->title }}</h3>
-                                <p class="text-xs text-slate-500 mb-2 line-clamp-2">{{ $history->content }}</p>
+                                alt="{{ $history->title }}" class="h-24 w-32 shrink-0 rounded-lg object-cover">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="mb-1 font-bold text-sm">{{ $history->title }}</h3>
+                                @if ($history->date)
+                                    <p class="mb-2 text-xs text-slate-400">{{ $history->date }}</p>
+                                @endif
+                                <p class="mb-3 line-clamp-2 text-xs text-slate-500">{{ $history->content }}</p>
                                 <form action="{{ route('admin.landing.destroy_history', $history->id) }}"
                                     method="POST" onsubmit="return confirm('Hapus histori ini?')">
                                     @csrf @method('DELETE')
@@ -873,7 +892,7 @@
                                         class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">Hapus</button>
                                 </form>
                             </div>
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             </div>

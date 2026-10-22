@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Banner;
 use App\Models\Syllabus;
+use App\Models\TrainingHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -93,6 +94,94 @@ class LandingAdminControllerTest extends TestCase
         $response->assertRedirect(route('admin.landing.index', ['tab' => 'banner']));
         $this->assertDatabaseMissing('banners', ['id' => $banner->id]);
         Storage::disk('public')->assertMissing('banners/banner.jpg');
+    }
+
+    public function test_authenticated_user_can_create_a_training_history_with_its_cover_and_short_description(): void
+    {
+        Storage::fake('public');
+
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->post(route('admin.landing.store_history'), [
+                'title' => 'Pelatihan HR Manufaktur',
+                'content' => 'Pelatihan bersama tim HR di Cikarang.',
+                'documentation_image' => UploadedFile::fake()->image('training.jpg'),
+                'date' => '2026-10-20',
+            ]);
+
+        $response->assertRedirect(route('admin.landing.index', ['tab' => 'history']));
+        $response->assertSessionHas('success', 'Riwayat pelatihan berhasil ditambahkan!');
+
+        $history = TrainingHistory::firstOrFail();
+        $this->assertSame('Pelatihan HR Manufaktur', $history->title);
+        $this->assertSame('Pelatihan bersama tim HR di Cikarang.', $history->content);
+        $this->assertSame('2026-10-20', $history->date);
+        Storage::disk('public')->assertExists($history->documentation_image);
+    }
+
+    public function test_training_history_creation_rejects_non_image_files_without_saving(): void
+    {
+        Storage::fake('public');
+
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->from(route('admin.landing.index', ['tab' => 'history']))
+            ->post(route('admin.landing.store_history'), [
+                'title' => 'Pelatihan HR Manufaktur',
+                'content' => 'Pelatihan bersama tim HR di Cikarang.',
+                'documentation_image' => UploadedFile::fake()->create('training.pdf', 50, 'application/pdf'),
+            ]);
+
+        $response->assertRedirect(route('admin.landing.index', ['tab' => 'history']));
+        $response->assertSessionHasErrors([
+            'documentation_image' => 'The documentation image field must be an image.',
+        ]);
+        $this->assertDatabaseCount('training_histories', 0);
+        $this->assertSame([], Storage::disk('public')->allFiles('histories'));
+    }
+
+    public function test_authenticated_user_can_delete_a_training_history_and_its_cover_image(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('histories/training.jpg', 'training image');
+        $history = TrainingHistory::create([
+            'title' => 'Pelatihan untuk dihapus',
+            'content' => 'Keterangan singkat.',
+            'documentation_image' => 'histories/training.jpg',
+            'date' => '2026-10-20',
+        ]);
+
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->delete(route('admin.landing.destroy_history', $history->id));
+
+        $response->assertRedirect(route('admin.landing.index', ['tab' => 'history']));
+        $this->assertDatabaseMissing('training_histories', ['id' => $history->id]);
+        Storage::disk('public')->assertMissing('histories/training.jpg');
+    }
+
+    public function test_public_landing_page_renders_training_histories_in_pages_of_four(): void
+    {
+        foreach (range(1, 5) as $index) {
+            $history = TrainingHistory::create([
+                'title' => "Riwayat training {$index}",
+                'content' => "Keterangan training {$index}.",
+                'documentation_image' => "histories/training-{$index}.jpg",
+            ]);
+            $history->forceFill(['created_at' => "2026-10-20 00:00:0{$index}"])->save();
+        }
+
+        $response = $this->get(route('landing.public'));
+
+        $response->assertOk();
+        $response->assertSee('Riwayat training 5');
+        $response->assertSee('Riwayat training 4');
+        $response->assertSee('Riwayat training 3');
+        $response->assertSee('Riwayat training 2');
+        $response->assertSee('Riwayat training 1');
+        $response->assertSee('historySwiper', false);
+        $response->assertSee('history-button-prev', false);
+        $response->assertSee('history-button-next', false);
     }
 
     public function test_guest_is_redirected_to_login_when_deleting_a_banner(): void

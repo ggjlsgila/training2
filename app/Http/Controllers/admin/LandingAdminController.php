@@ -343,29 +343,32 @@ class LandingAdminController extends Controller
     // ==========================================
     // 5. TRAINING HISTORY CRUD (Section 5)
     // ==========================================
-    public function storeHistory(Request $request)
+    public function storeHistory(Request $request): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'image' => 'required|image|max:2048',
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string', 'max:1000'],
+            'documentation_image' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'date' => ['nullable', 'date'],
         ]);
 
         TrainingHistory::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $request->file('image')->store('histories', 'public'),
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'documentation_image' => $validated['documentation_image']->store('histories', 'public'),
+            'date' => $validated['date'] ?? null,
         ]);
 
         return redirect()->route('admin.landing.index', ['tab' => 'history'])
             ->with('success', 'Riwayat pelatihan berhasil ditambahkan!');
     }
 
-    public function destroyHistory($id)
+    public function destroyHistory(int $id): RedirectResponse
     {
         $history = TrainingHistory::findOrFail($id);
 
-        if ($history->image && Storage::disk('public')->exists($history->image)) {
-            Storage::disk('public')->delete($history->image);
+        if ($history->documentation_image && Storage::disk('public')->exists($history->documentation_image)) {
+            Storage::disk('public')->delete($history->documentation_image);
         }
 
         $history->delete();

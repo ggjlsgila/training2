@@ -14,13 +14,51 @@
 
     <!-- PASTIKAN CSS SWIPER INI ADA DI <head> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        section {
+            scroll-margin-top: 80px;
+        }
+    </style>
 </head>
 
 <body class="bg-slate-50 text-slate-800 font-sans">
+    <!-- ================= NAVBAR MENU ================= -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
+
+            <!-- Logo & Nama -->
+            <a href="#beranda" class="flex items-center gap-3">
+                <img src="{{ asset('image/logo.png') }}" alt="Logo" class="h-10 w-auto object-contain">
+                <div>
+                    <span class="block font-bold text-slate-900 text-lg leading-tight">HR Manufaktur Indonesia</span>
+                    <span class="block text-xs text-slate-500">Pusat Pelatihan & Sertifikasi Industri</span>
+                </div>
+            </a>
+
+            <!-- Menu Navigasi ke 5 Section -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#beranda" class="text-sm font-medium text-slate-600 hover:text-blue-800 transition">Beranda</a>
+                <a href="#mitra" class="text-sm font-medium text-slate-600 hover:text-blue-800 transition">Mitra</a>
+                <a href="#flayer"
+                    class="text-sm font-medium text-slate-600 hover:text-blue-800 transition flex items-center gap-1.5">
+                    Flayer
+                </a>
+                <a href="#silabus" class="text-sm font-medium text-slate-600 hover:text-blue-800 transition">Silabus
+                    Buku</a>
+                <a href="#histori" class="text-sm font-medium text-slate-600 hover:text-blue-800 transition">Histori &
+                    Dokumentasi Training</a>
+            </nav>
+
+        </div>
+    </header>
+    <!-- ================= END NAVBAR ================= --></div>
     <main class="mx-auto w-full max-w-7xl">
         <!-- SECTION 1: BANNER UTAMA (SLIDER SWIPER.JS) -->
-        <section class="relative bg-slate-950 h-[460px] md:h-[520px] w-full overflow-hidden">
-
+        <section id="beranda" class="relative bg-slate-950 h-[460px] md:h-[520px] w-full overflow-hidden">
             @if (isset($banners) && count($banners) > 0)
                 <!-- Container Swiper dengan tinggi pasti (h-full) -->
                 <div class="swiper bannerSwiper w-full h-full">
@@ -49,8 +87,7 @@
                                         <div class="w-12 h-1 bg-amber-400 mb-4 rounded-full"></div>
 
                                         @if ($banner->title)
-                                            <h1
-                                                class="banner-title mb-3 text-white drop-shadow-sm">
+                                            <h1 class="banner-title mb-3 text-white drop-shadow-sm">
                                                 @foreach ($banner->title_segments_for_display as $titleSegment)
                                                     @if ($titleSegment['color'])
                                                         <span
@@ -63,8 +100,7 @@
                                         @endif
 
                                         @if ($banner->subtitle)
-                                            <p
-                                                class="banner-subtitle mb-6 text-slate-200 font-normal">
+                                            <p class="banner-subtitle mb-6 text-slate-200 font-normal">
                                                 {{ $banner->subtitle }}
                                             </p>
                                         @endif
@@ -188,12 +224,13 @@
         </style>
         <!-- 2. SECTION LOGO MITRA -->
         @php
-            $partnerLogoRows = $partners->values()->partition(fn ($partner, $index) => $index % 2 === 0);
-            $partnerLogoRows = $partnerLogoRows->map(fn ($row) => $row->isEmpty() ? $partners : $row);
+            $partnerLogoRows = $partners->values()->partition(fn($partner, $index) => $index % 2 === 0);
+            $partnerLogoRows = $partnerLogoRows->map(fn($row) => $row->isEmpty() ? $partners : $row);
         @endphp
-        <section class="partner-section border-b bg-white py-10 md:py-12">
+        <section id="mitra" class="partner-section border-b bg-white py-10 md:py-12">
             <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-6 md:px-8 lg:grid-cols-5 lg:gap-0">
-                <div class="flex items-center justify-center gap-5 text-left md:justify-start lg:col-span-2 lg:border-r lg:border-slate-200 lg:pr-8">
+                <div
+                    class="flex items-center justify-center gap-5 text-left md:justify-start lg:col-span-2 lg:border-r lg:border-slate-200 lg:pr-8">
                     <i class="fa-solid fa-people-group shrink-0 text-[45px] text-blue-700 md:text-[54px]"
                         aria-hidden="true"></i>
                     <div>
@@ -210,24 +247,25 @@
                 <div class="min-w-0 space-y-4 lg:col-span-3 lg:pl-8">
                     @if ($partners->isNotEmpty())
                         @foreach ($partnerLogoRows as $rowIndex => $rowPartners)
-                        <div class="partner-marquee" role="group"
-                            aria-label="Logo perusahaan mitra, baris {{ $rowIndex + 1 }}">
-                            <div
-                                class="partner-marquee-track {{ $rowIndex === 0 ? 'partner-marquee-right' : 'partner-marquee-left' }}">
-                                @foreach ([false, true] as $isDuplicate)
-                                    <div class="partner-marquee-group" @if ($isDuplicate) aria-hidden="true" @endif>
-                                        @foreach ($rowPartners as $partner)
-                                            <div class="partner-logo-item">
-                                                <img src="{{ asset('storage/' . $partner->logo) }}"
-                                                    alt="{{ $isDuplicate ? '' : $partner->name }}"
-                                                    title="{{ $isDuplicate ? '' : $partner->name }}"
-                                                    loading="lazy">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endforeach
+                            <div class="partner-marquee" role="group"
+                                aria-label="Logo perusahaan mitra, baris {{ $rowIndex + 1 }}">
+                                <div
+                                    class="partner-marquee-track {{ $rowIndex === 0 ? 'partner-marquee-right' : 'partner-marquee-left' }}">
+                                    @foreach ([false, true] as $isDuplicate)
+                                        <div class="partner-marquee-group"
+                                            @if ($isDuplicate) aria-hidden="true" @endif>
+                                            @foreach ($rowPartners as $partner)
+                                                <div class="partner-logo-item">
+                                                    <img src="{{ asset('storage/' . $partner->logo) }}"
+                                                        alt="{{ $isDuplicate ? '' : $partner->name }}"
+                                                        title="{{ $isDuplicate ? '' : $partner->name }}"
+                                                        loading="lazy">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
                         @endforeach
                     @else
                         <p class="py-8 text-center text-sm text-slate-400 md:text-left">Belum ada logo mitra.</p>
@@ -324,11 +362,12 @@
         </style>
 
         <!-- 3. SECTION FLYER TRAINING -->
-        <section class="flyer-section bg-sky-50/70">
+        <section id="flayer" class="flyer-section bg-sky-50/70">
             <div
-                class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-6 pt-12 pb-0 md:px-8 lg:grid-cols-[48fr_52fr] lg:gap-0">
+                class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-6 pt-12 pb-12 md:px-8 lg:grid-cols-[48fr_52fr] lg:gap-0">
                 <div class="lg:pr-6">
-                    <h2 class="flyer-section-title whitespace-pre-line text-[2rem] font-extrabold leading-[1.15] tracking-tight text-slate-900 md:text-4xl">
+                    <h2
+                        class="flyer-section-title whitespace-pre-line text-[2rem] font-extrabold leading-[1.15] tracking-tight text-slate-900 md:text-4xl">
                         @foreach ($flyerTitleSegments as $segment)
                             @if (preg_match('/\A#[0-9a-fA-F]{6}\z/', $segment['color'] ?? ''))
                                 <span style="color: {{ $segment['color'] }}">{{ $segment['text'] }}</span>
@@ -337,7 +376,8 @@
                             @endif
                         @endforeach
                     </h2>
-                    <p class="flyer-section-description mt-3 whitespace-pre-line text-lg leading-relaxed text-slate-600 md:text-xl">
+                    <p
+                        class="flyer-section-description mt-3 whitespace-pre-line text-lg leading-relaxed text-slate-600 md:text-xl">
                         @foreach ($flyerDescriptionSegments as $segment)
                             @if (preg_match('/\A#[0-9a-fA-F]{6}\z/', $segment['color'] ?? ''))
                                 <span style="color: {{ $segment['color'] }}">{{ $segment['text'] }}</span>
@@ -363,7 +403,7 @@
                                             class="group relative block w-full cursor-zoom-in overflow-hidden text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-4">
                                             <img src="{{ asset('storage/' . $flyer->thumbnail_image) }}"
                                                 alt="{{ $flyer->title ?? 'Flyer training' }}"
-                                                class="h-[460px] w-full object-contain md:h-[520px]" loading="lazy">
+                                                class="h-[440px] w-full object-contain md:h-[480px]" loading="lazy">
                                             <span
                                                 class="pointer-events-none absolute left-1/2 top-1/2 flex max-w-[85%] -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-slate-950/80 px-3 py-2 text-center text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
                                                 <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
@@ -375,7 +415,7 @@
                             </div>
                         </div>
                         @if ($flyers->count() > 1)
-                            <div class="mt-4 flex items-center justify-center gap-3">
+                            <div class="mt-2 flex items-center justify-center gap-3">
                                 <button type="button"
                                     class="flyer-button-prev flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-700 shadow transition hover:bg-slate-100"
                                     aria-label="Flyer sebelumnya">
@@ -384,7 +424,9 @@
                                 <div class="flyer-progress-track h-2 w-11 overflow-hidden rounded-full bg-amber-100"
                                     role="progressbar" aria-label="Waktu menuju flyer berikutnya" aria-valuemin="0"
                                     aria-valuemax="100" aria-valuenow="0">
-                                    <div class="flyer-progress-bar h-full w-full origin-left scale-x-0 rounded-full bg-amber-400"></div>
+                                    <div
+                                        class="flyer-progress-bar h-full w-full origin-left scale-x-0 rounded-full bg-amber-400">
+                                    </div>
                                 </div>
                                 <button type="button"
                                     class="flyer-button-next flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white shadow transition hover:bg-amber-500"
@@ -450,14 +492,14 @@
                 background: #f59e0b;
             }
 
-            .flyer-hover-dismissed > span {
+            .flyer-hover-dismissed>span {
                 opacity: 0 !important;
                 transform: translateY(0.5rem) !important;
             }
         </style>
 
         <!-- 4. SECTION BUKU SILABUS -->
-        <section class="bg-white pt-4 pb-4">
+        <section id="silabus" class="bg-white pt-4 pb-4">
             <div class="max-w-7xl mx-auto px-4 md:px-8">
                 <div class="mb-3 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
                     <div class="shrink-0 md:max-w-[43%]">
@@ -466,7 +508,8 @@
                             Silabus Training HR<br class="hidden md:block"> Manufaktur Indonesia
                         </h2>
                     </div>
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center md:max-w-[55%] md:border-l md:border-slate-200 md:pl-8">
+                    <div
+                        class="flex flex-col gap-4 sm:flex-row sm:items-center md:max-w-[55%] md:border-l md:border-slate-200 md:pl-8">
                         <p class="text-sm leading-relaxed text-slate-600 md:text-base">
                             Buku-buku acuan untuk training-training HR Manufaktur Indonesia.
                         </p>
@@ -481,41 +524,53 @@
                     </div>
                 </div>
                 @if ($syllabi->isNotEmpty())
-                    <div class="swiper syllabusSwiper overflow-hidden py-0">
-                        <div class="swiper-wrapper items-center {{ $syllabi->count() === 1 ? 'justify-center' : '' }}">
-                            @foreach ($syllabi as $syllabus)
-                                <div class="swiper-slide !h-24 !w-40 sm:!h-28 sm:!w-[181px]">
-                                    <button type="button"
-                                        class="mx-auto flex h-full w-full justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-4"
-                                        data-syllabus-title="{{ $syllabus->title }}"
-                                        data-syllabus-image="{{ asset('storage/' . $syllabus->cover_image) }}"
-                                        data-syllabus-description="{{ $syllabus->long_description }}"
-                                        aria-label="Baca silabus: {{ $syllabus->title }}"
-                                        onclick="openSyllabusModal(this)">
-                                        <span class="relative block h-full w-full overflow-hidden">
-                                        <img src="{{ asset('storage/' . $syllabus->cover_image) }}"
-                                            alt="{{ $syllabus->title }}"
-                                            class="absolute left-1/2 top-0 h-56 w-auto max-w-[75vw] -translate-x-1/2 -translate-y-[28%] object-contain sm:h-64"
-                                            loading="lazy">
-                                        </span>
-                                    </button>
-                                </div>
-                            @endforeach
+                    <!-- CONTAINER DIUBAH DI SINI: pakai max-w dan padding agar tombol pas di samping buku -->
+                    <div class="relative mx-auto max-w-6xl px-10">
+                        <div class="swiper syllabusSwiper overflow-hidden py-2">
+                            <div
+                                class="swiper-wrapper items-center {{ $syllabi->count() === 1 ? 'justify-center' : '' }}">
+                                @foreach ($syllabi as $syllabus)
+                                    <div class="swiper-slide !h-24 sm:!h-28">
+                                        <button type="button"
+                                            class="mx-auto flex h-full w-full justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-4"
+                                            data-syllabus-title="{{ $syllabus->title }}"
+                                            data-syllabus-image="{{ asset('storage/' . $syllabus->cover_image) }}"
+                                            data-syllabus-description="{{ $syllabus->long_description }}"
+                                            aria-label="Baca silabus: {{ $syllabus->title }}"
+                                            onclick="openSyllabusModal(this)">
+                                            <span class="relative block h-full w-full overflow-hidden">
+                                                <img src="{{ asset('storage/' . $syllabus->cover_image) }}"
+                                                    alt="{{ $syllabus->title }}"
+                                                    class="absolute left-1/2 top-0 h-56 w-auto max-w-[75vw] -translate-x-1/2 -translate-y-[28%] object-contain sm:h-64"
+                                                    loading="lazy">
+                                            </span>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                    @if ($syllabi->count() > 1)
-                        <div class="mt-2 flex items-center justify-center gap-4">
+
+                        @if ($syllabi->count() > 1)
+                            <!-- Tombol Prev -->
                             <button type="button"
-                                class="syllabus-button-prev flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-700 shadow transition hover:bg-slate-100"
+                                class="syllabus-button-prev absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-700 shadow-md transition hover:bg-slate-100"
                                 aria-label="Silabus sebelumnya">
                                 <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
                             </button>
-                            <div class="syllabus-pagination flex items-center justify-center gap-2"></div>
+
+                            <!-- Tombol Next -->
                             <button type="button"
-                                class="syllabus-button-next flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white shadow transition hover:bg-amber-500"
+                                class="syllabus-button-next absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white shadow-md transition hover:bg-amber-500"
                                 aria-label="Silabus berikutnya">
                                 <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
                             </button>
+                        @endif
+                    </div>
+
+                    <!-- Titik-titik Pagination -->
+                    @if ($syllabi->count() > 1)
+                        <div class="mt-4 flex items-center justify-center">
+                            <div class="syllabus-pagination flex items-center justify-center gap-2"></div>
                         </div>
                     @endif
                 @endif
@@ -523,20 +578,59 @@
         </section>
 
         <!-- 5. SECTION HISTORI TRAINING -->
-        <section class="py-16 max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl font-bold mb-6">Histori & Dokumentasi Training</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                @foreach ($histories as $history)
-                    <div class="bg-white rounded-xl shadow p-5 border flex flex-col md:flex-row gap-4">
-                        <img src="{{ asset('storage/' . $history->documentation_image) }}"
-                            class="w-full md:w-44 h-32 object-cover rounded-lg">
-                        <div>
-                            <span class="text-xs text-slate-400">{{ $history->date }}</span>
-                            <h3 class="font-bold text-lg mb-2">{{ $history->title }}</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed">{{ $history->content }}</p>
+        <section id="histori" class="min-h-[460px] bg-amber-50/60 px-4 py-8 md:min-h-[520px] md:py-10">
+            <div class="mx-auto max-w-7xl">
+                <h2 class="mb-5 text-2xl font-extrabold text-slate-900 md:text-3xl">
+                    Histori & Dokumentasi Training
+                </h2>
+                @if ($histories->isNotEmpty())
+                    <div class="swiper historySwiper overflow-hidden">
+                        <div class="swiper-wrapper">
+                            @foreach ($histories->chunk(4) as $historyPage)
+                                <div class="swiper-slide">
+                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        @foreach ($historyPage as $history)
+                                            <article
+                                                class="flex min-h-36 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                                                <img src="{{ asset('storage/' . $history->documentation_image) }}"
+                                                    alt="{{ $history->title }}"
+                                                    class="h-36 w-2/5 shrink-0 object-cover sm:w-44" loading="lazy">
+                                                <div class="flex min-w-0 flex-1 flex-col justify-center p-4">
+                                                    @if ($history->date)
+                                                        <p
+                                                            class="mb-1 text-xs font-semibold uppercase tracking-wide text-amber-600">
+                                                            {{ $history->date }}
+                                                        </p>
+                                                    @endif
+                                                    <h3 class="mb-2 text-base font-bold leading-snug text-slate-900">
+                                                        {{ $history->title }}
+                                                    </h3>
+                                                    <p class="text-sm leading-relaxed text-slate-600">
+                                                        {{ \Illuminate\Support\Str::limit($history->content, 120) }}
+                                                    </p>
+                                                </div>
+                                            </article>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                @endforeach
+                    @if ($histories->count() > 4)
+                        <div class="mt-4 flex items-center justify-center gap-3">
+                            <button type="button"
+                                class="history-button-prev flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-700 shadow transition hover:bg-slate-100"
+                                aria-label="Histori training sebelumnya">
+                                <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <button type="button"
+                                class="history-button-next flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white shadow transition hover:bg-amber-500"
+                                aria-label="Histori training berikutnya">
+                                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    @endif
+                @endif
             </div>
         </section>
     </main>
@@ -545,8 +639,10 @@
         class="fixed inset-0 z-50 hidden items-center justify-center bg-sky-100/90 p-3 backdrop-blur-sm sm:p-4"
         role="dialog" aria-modal="true" aria-label="Pratinjau flyer" tabindex="-1"
         onclick="if (event.target === this) closeFlyerModal(event)">
-        <div class="relative flex max-h-[calc(100dvh-1.5rem)] w-fit max-w-full flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:max-h-[calc(100dvh-2rem)]">
-            <div class="flex shrink-0 items-center justify-center gap-3 border-b border-sky-100 px-4 py-3 text-slate-800 sm:gap-4 sm:px-6">
+        <div
+            class="relative flex max-h-[calc(100dvh-1.5rem)] w-fit max-w-full flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:max-h-[calc(100dvh-2rem)]">
+            <div
+                class="flex shrink-0 items-center justify-center gap-3 border-b border-sky-100 px-4 py-3 text-slate-800 sm:gap-4 sm:px-6">
                 <button type="button" onclick="closeFlyerModal(event)"
                     class="inline-flex items-center gap-2 rounded-full bg-amber-400 px-3 py-2 text-xs font-semibold text-white transition hover:bg-amber-500 sm:px-4 sm:text-sm"
                     aria-label="Kembali ke landing page">
@@ -565,8 +661,10 @@
         class="fixed inset-0 z-50 hidden items-center justify-center bg-sky-100/90 p-4 backdrop-blur-sm"
         role="dialog" aria-modal="true" aria-label="Detail buku silabus" tabindex="-1"
         onclick="if (event.target === this) closeSyllabusModal(event)">
-        <div class="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:flex-row">
-            <div class="flex shrink-0 items-center justify-end border-b border-sky-100 p-3 sm:absolute sm:right-0 sm:top-0 sm:z-10 sm:border-0">
+        <div
+            class="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:flex-row">
+            <div
+                class="flex shrink-0 items-center justify-end border-b border-sky-100 p-3 sm:absolute sm:right-0 sm:top-0 sm:z-10 sm:border-0">
                 <button type="button" onclick="closeSyllabusModal(event)"
                     class="inline-flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-500"
                     aria-label="Kembali ke daftar silabus">
@@ -580,7 +678,8 @@
             </div>
             <div class="min-h-0 overflow-y-auto p-5 sm:w-3/5 sm:p-8 sm:pt-16">
                 <h3 id="syllabusModalTitle" class="mb-3 pr-20 text-xl font-extrabold text-slate-900 sm:text-2xl"></h3>
-                <p id="syllabusModalDescription" class="whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base"></p>
+                <p id="syllabusModalDescription"
+                    class="whitespace-pre-line text-sm leading-relaxed text-slate-600 sm:text-base"></p>
             </div>
         </div>
     </div>
@@ -723,8 +822,10 @@
                     },
                     on: {
                         autoplayTimeLeft(swiper, timeLeft, percentage) {
-                            const progress = flyerSwiperElement.parentElement.querySelector('.flyer-progress-bar');
-                            const progressTrack = flyerSwiperElement.parentElement.querySelector('.flyer-progress-track');
+                            const progress = flyerSwiperElement.parentElement.querySelector(
+                                '.flyer-progress-bar');
+                            const progressTrack = flyerSwiperElement.parentElement.querySelector(
+                                '.flyer-progress-track');
                             const elapsed = Math.round((1 - percentage) * 100);
 
                             if (progress && progressTrack) {
@@ -740,9 +841,23 @@
             const syllabusSwiperElement = document.querySelector('.syllabusSwiper');
             if (syllabusSwiperElement && {{ $syllabi->count() > 1 ? 'true' : 'false' }}) {
                 new Swiper(syllabusSwiperElement, {
-                    loop: true,
-                    slidesPerView: 'auto',
-                    spaceBetween: 20,
+                    loop: true, // Biar muter terus (infinite loop)
+                    slidesPerView: 3, // Default untuk layar HP
+                    spaceBetween: 15,
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 4,
+                            spaceBetween: 15
+                        },
+                        768: {
+                            slidesPerView: 5,
+                            spaceBetween: 20
+                        },
+                        1024: {
+                            slidesPerView: 7,
+                            spaceBetween: 20
+                        }, // PAS 7 GAMBAR DI HALAMAN DEPAN
+                    },
                     navigation: {
                         nextEl: '.syllabus-button-next',
                         prevEl: '.syllabus-button-prev',
@@ -750,6 +865,18 @@
                     pagination: {
                         el: '.syllabus-pagination',
                         clickable: true,
+                    },
+                    speed: 600,
+                });
+            }
+
+            const historySwiperElement = document.querySelector('.historySwiper');
+            if (historySwiperElement && {{ $histories->count() > 4 ? 'true' : 'false' }}) {
+                new Swiper(historySwiperElement, {
+                    slidesPerView: 1,
+                    navigation: {
+                        nextEl: '.history-button-next',
+                        prevEl: '.history-button-prev',
                     },
                     speed: 600,
                 });
